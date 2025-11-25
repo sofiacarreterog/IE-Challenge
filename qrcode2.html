@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clean Up – QR Recycling Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #002145;
+      color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #002145;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: #E4FDE1;
+      color: #002145;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      margin-bottom: 18px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #002145;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #003366;
+      margin-bottom: 16px;
+    }
+
+    .ie-logo {
+      width: 140px;
+      display: block;
+      margin: 0 auto 20px auto;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1px solid #a0b4bb;
+      box-sizing: border-box;
+      background-color: white;
+      color: #002145;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+      background-color: #0051A2;
+      color: white;
+    }
+
+    .btn.secondary {
+      width: auto;
+      padding-inline: 16px;
+      margin-top: 0;
+      background-color: #cccccc;
+      color: #002145;
+    }
+
+    .btn.inline {
+      width: auto;
+      padding-inline: 16px;
+      margin-top: 0;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .points-card {
+      background: #0051A2;
+      color: white;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .points-value {
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .how-steps {
+      font-size: 13px;
+      color: #003366;
+      padding-left: 18px;
+    }
+
+    .how-steps li {
+      margin-bottom: 4px;
+    }
+
+    .step-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background-color: #E3F2FD;
+      color: #0D47A1;
+      margin-bottom: 4px;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background-color: #FFE082;
+      color: #795548;
+      margin-bottom: 6px;
+    }
+
+    .status-pill.done {
+      background-color: #C8E6C9;
+      color: #1B5E20;
+    }
+
+    .message-bar {
+      display: none;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .message-bar.error {
+      background-color: #ffcdd2;
+      color: #b71c1c;
+      border: 1px solid #ef9a9a;
+    }
+
+    .message-bar.success {
+      background-color: #c8e6c9;
+      color: #1b5e20;
+      border: 1px solid #a5d6a7;
+    }
+
+    .history-item {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 8px 0;
+      font-size: 13px;
+    }
+
+    .reward-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 12px;
+      background-color: #c8e6c9;
+      color: #002145;
+      margin-bottom: 10px;
+    }
+
+    .code-box {
+      background-color: #c8e6c9;
+      padding: 14px;
+      border-radius: 10px;
+      display: none;
+      margin-top: 12px;
+      color: #002145;
+    }
+
+    /* video previews in history */
+    video {
+      margin-top: 8px;
+      width: 100%;
+      max-height: 200px;
+      border-radius: 10px;
+      background-color: black;
+    }
+
+    #mainView { display: none; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- LOGIN -->
+    <div id="loginView" class="card">
+      <img src="images/IE_University_logo.svg" class="ie-logo" alt="IE University">
+
+      <h1>Clean Up</h1>
+      <p class="subtitle">Earn cafeteria rewards for reducing rubbish on campus 🌱</p>
+
+      <div id="loginMessage" class="message-bar"></div>
+
+      <label>Name</label>
+      <input id="nameInput" type="text" placeholder="Your name">
+
+      <label>University email</label>
+      <input id="emailInput" type="email" placeholder="you@university.edu">
+
+      <button id="loginBtn" class="btn">Log in</button>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainView">
+
+      <!-- HOW IT WORKS + POINTS -->
+      <div class="card">
+        <div class="top-row">
+          <div>
+            <h2 id="greeting"></h2>
+            <p class="subtitle">Thanks for helping keep campus clean 💚</p>
+          </div>
+          <button id="logoutBtn" class="btn secondary">Log out</button>
+        </div>
+
+        <div class="points-card">
+          <div class="points-value" id="pointsValue">0</div>
+          pts
+        </div>
+
+        <h3>How it works</h3>
+        <ol class="how-steps">
+          <li>Get an item at the cafeteria and scan the <strong>CLEAN UP</strong> QR.</li>
+          <li>After eating, go to the recycling centre, scan the QR again and recycle.</li>
+          <li>Your points appear in the app.</li>
+          <li>Go back to the cafeteria and redeem your points for rewards.</li>
+        </ol>
+      </div>
+
+      <!-- CURRENT CYCLE -->
+      <div class="card">
+        <h3>Current item</h3>
+        <div id="cycleStatus" class="status-pill">No item started yet</div>
+
+        <div id="cycleMessage" class="message-bar"></div>
+
+        <p style="font-size:13px; margin-top:10px;">
+          <span class="step-badge">Step 1</span><br>
+          At the cafeteria, the staff shows you the CLEAN UP QR. Tap the button below to
+          simulate scanning it.
+        </p>
+        <button id="cafScanBtn" class="btn">Scan QR at cafeteria (start)</button>
+
+        <p style="font-size:13px; margin-top:16px;">
+          <span class="step-badge">Step 2</span><br>
+          After you finish eating, go to the recycling centre and bin your item.
+          Tap the button below to simulate scanning the QR again and finishing the cycle.
+        </p>
+        <button id="recycleScanBtn" class="btn" disabled>
+          Scan QR at recycling centre (finish)
+        </button>
+
+        <label style="margin-top:16px;">Optional proof video</label>
+        <input id="videoInput" type="file" accept="video/*" capture="environment">
+      </div>
+
+      <!-- HISTORY -->
+      <div class="card">
+        <h3>Completed items</h3>
+        <div id="historyList">
+          <p>No items completed yet.</p>
+        </div>
+      </div>
+
+      <!-- REWARDS -->
+      <div class="card">
+        <h3>Redeem rewards</h3>
+
+        <div id="rewardMessage" class="message-bar"></div>
+
+        <div class="reward-item">
+          <span>Coffee – 30 pts</span>
+          <button class="btn inline reward-btn" data-name="Coffee" data-cost="30">Redeem</button>
+        </div>
+
+        <div class="reward-item">
+          <span>Snack – 50 pts</span>
+          <button class="btn inline reward-btn" data-name="Snack" data-cost="50">Redeem</button>
+        </div>
+
+        <div class="reward-item">
+          <span>Sandwich – 80 pts</span>
+          <button class="btn inline reward-btn" data-name="Sandwich" data-cost="80">Redeem</button>
+        </div>
+
+        <div id="codeBox" class="code-box">
+          <p><strong>Show this code at the cafeteria:</strong></p>
+          <p id="codeValue" style="font-size:20px; font-weight:700;"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Simple state
+    let user = null;
+    let points = 0;
+    let nextCycleId = 1;
+    let currentCycle = null; // {id, cafeTime, recycleTime, points, videoUrl}
+    let history = [];
+
+    // Elements
+    const loginView   = document.getElementById("loginView");
+    const mainView    = document.getElementById("mainView");
+    const nameInput   = document.getElementById("nameInput");
+    const emailInput  = document.getElementById("emailInput");
+    const loginBtn    = document.getElementById("loginBtn");
+    const logoutBtn   = document.getElementById("logoutBtn");
+    const greeting    = document.getElementById("greeting");
+    const pointsValue = document.getElementById("pointsValue");
+
+    const loginMessage   = document.getElementById("loginMessage");
+    const cycleStatus    = document.getElementById("cycleStatus");
+    const cycleMessage   = document.getElementById("cycleMessage");
+    const cafScanBtn     = document.getElementById("cafScanBtn");
+    const recycleScanBtn = document.getElementById("recycleScanBtn");
+    const videoInput     = document.getElementById("videoInput");
+    const historyList    = document.getElementById("historyList");
+
+    const rewardMessage = document.getElementById("rewardMessage");
+    const rewardBtns    = document.querySelectorAll(".reward-btn");
+    const codeBox       = document.getElementById("codeBox");
+    const codeValue     = document.getElementById("codeValue");
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = "message-bar " + (type || "error");
+      el.style.display = "block";
+    }
+
+    function clearMessage(el) {
+      el.textContent = "";
+      el.className = "message-bar";
+      el.style.display = "none";
+    }
+
+    function render() {
+      if (!user) {
+        loginView.style.display = "block";
+        mainView.style.display = "none";
+        return;
+      }
+
+      loginView.style.display = "none";
+      mainView.style.display = "block";
+
+      greeting.textContent = "Hi, " + user.name;
+      pointsValue.textContent = points;
+
+      // Current cycle UI
+      if (!currentCycle) {
+        cycleStatus.textContent = "No item started yet";
+        cycleStatus.className = "status-pill";
+        recycleScanBtn.disabled = true;
+      } else if (currentCycle && !currentCycle.recycleTime) {
+        cycleStatus.textContent = "Item started – waiting for recycling scan";
+        cycleStatus.className = "status-pill";
+        recycleScanBtn.disabled = false;
+      } else {
+        cycleStatus.textContent = "Last item completed ✔";
+        cycleStatus.className = "status-pill done";
+        recycleScanBtn.disabled = true;
+      }
+
+      // History
+      if (history.length === 0) {
+        historyList.innerHTML = "<p>No items completed yet.</p>";
+      } else {
+        historyList.innerHTML = "";
+        history.forEach(entry => {
+          const div = document.createElement("div");
+          div.className = "history-item";
+          div.innerHTML = `
+            <strong>Item #${entry.id} · +${entry.points} pts</strong><br>
+            Cafeteria scan: ${entry.cafeTime}<br>
+            Recycling scan: ${entry.recycleTime}
+          `;
+          if (entry.videoUrl) {
+            const v = document.createElement("video");
+            v.src = entry.videoUrl;
+            v.controls = true;
+            div.appendChild(v);
+          }
+          historyList.appendChild(div);
+        });
+      }
+    }
+
+    // LOGIN
+    loginBtn.onclick = () => {
+      clearMessage(loginMessage);
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      if (!name || !email) {
+        showMessage(loginMessage, "Please enter your name and university email.", "error");
+        return;
+      }
+      user = { name, email };
+      render();
+    };
+
+    // LOGOUT
+    logoutBtn.onclick = () => {
+      if (!confirm("Log out?")) return;
+      user = null;
+      points = 0;
+      currentCycle = null;
+      history = [];
+      codeBox.style.display = "none";
+      clearMessage(rewardMessage);
+      render();
+    };
+
+    // STEP 1: QR scan at cafeteria
+    cafScanBtn.onclick = () => {
+      clearMessage(cycleMessage);
+      if (currentCycle && !currentCycle.recycleTime) {
+        showMessage(
+          cycleMessage,
+          "You already have an item started. Finish it at the recycling centre before starting a new one.",
+          "error"
+        );
+        return;
+      }
+      videoInput.value = ""; // reset optional video
+      const now = new Date().toLocaleString();
+      currentCycle = {
+        id: nextCycleId++,
+        cafeTime: now,
+        recycleTime: null,
+        points: 10,
+        videoUrl: null
+      };
+      showMessage(
+        cycleMessage,
+        "Cafeteria QR scanned. Enjoy your item and remember to recycle it later! 🌍",
+        "success"
+      );
+      render();
+    };
+
+    // STEP 2: QR scan at recycling centre
+    recycleScanBtn.onclick = () => {
+      clearMessage(cycleMessage);
+      if (!currentCycle || currentCycle.recycleTime) {
+        showMessage(
+          cycleMessage,
+          "Start an item at the cafeteria first by scanning the QR there.",
+          "error"
+        );
+        return;
+      }
+
+      // OPTIONAL video
+      const file = videoInput.files[0];
+      if (file) {
+        currentCycle.videoUrl = URL.createObjectURL(file);
+      }
+
+      const now = new Date().toLocaleString();
+      currentCycle.recycleTime = now;
+      points += currentCycle.points;
+
+      history.unshift({
+        id: currentCycle.id,
+        cafeTime: currentCycle.cafeTime,
+        recycleTime: currentCycle.recycleTime,
+        points: currentCycle.points,
+        videoUrl: currentCycle.videoUrl || null
+      });
+
+      // reset video chooser for next cycle
+      videoInput.value = "";
+
+      showMessage(
+        cycleMessage,
+        `Recycling scan complete! +${currentCycle.points} points added to your balance 🎉`,
+        "success"
+      );
+      render();
+    };
+
+    // REWARDS
+    function makeCode() {
+      return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    rewardBtns.forEach(btn => {
+      btn.onclick = () => {
+        clearMessage(rewardMessage);
+        const item = btn.dataset.name;
+        const cost = parseInt(btn.dataset.cost, 10);
+
+        if (points < cost) {
+          showMessage(rewardMessage, "Not enough points for " + item + ".", "error");
+          return;
+        }
+
+        points -= cost;
+        const code = makeCode();
+        codeValue.textContent = code;
+        codeBox.style.display = "block";
+
+        showMessage(
+          rewardMessage,
+          `Redeemed ${item}! Show the code below at the cafeteria to collect your reward.`,
+          "success"
+        );
+        render();
+      };
+    });
+
+    render();
+  </script>
+</body>
+</html>
+
